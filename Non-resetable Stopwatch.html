@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Resetable Timer</title>
+    <style>
+        .container {
+            width: 50vw;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: lightblue;
+            padding: 6px 8px;
+            border-radius: 10px;
+            margin: 0 4px;
+            cursor: pointer;
+            font-size: large;
+        }
+        button:hover{
+            background-color: rgb(108, 194, 223);
+        }
+        .timer {
+            display: flex;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="buttons">
+            <button onclick="start()">Start Timer</button>
+            <button onclick="stop()">Stop</button>
+            <button onclick="reset()">Reset</button> <br>
+        </div>
+        <div class="timer">
+            <h1>Timer : </h1>
+            <h1 id="time">0</h1>
+            <h1>seconds</h1>
+        </div>
+    </div>
+
+    <script>
+        console.log("stript start");
+        let visitCount, interval, currentTime, now, startAt, startTime;
+        if(sessionStorage.getItem("visitCount") == null){
+            visitCount = 0;
+        }else{
+            console.log(sessionStorage.getItem("visitCount"));
+            visitCount = parseInt(sessionStorage.getItem("visitCount"))+1;
+        }
+        if(visitCount != 0){
+            start();
+        }
+
+        function start() {
+            if (sessionStorage.getItem("start") == null) {
+                startAt = new Date();
+            } else {
+                console.log(sessionStorage.getItem("start"));
+                startAt = new Date(JSON.parse(sessionStorage.getItem("start")));
+            }
+            startTime = Math.round(startAt.getTime() / 1000);
+
+            
+            timer();
+            function timer() {
+                interval = setInterval(function () {
+                    if (sessionStorage.getItem("now") == null) {
+                        now = new Date();
+                    } else {
+                        now = new Date(JSON.parse(sessionStorage.getItem("now")));
+                    }
+                    currentTime = Math.round(now.getTime() / 1000);
+                    document.getElementById("time").innerText = (currentTime - startTime);
+                    now = new Date();
+                    sessionStorage.setItem("now", JSON.stringify(now));
+                }, 100);
+            }
+        }
+        function stop() {
+            clearInterval(interval);
+        }
+        function reset() {
+            clearInterval(interval);
+            location.reload();
+            sessionStorage.clear();
+        }
+        window.onbeforeunload = function () {
+            sessionStorage.setItem("start", JSON.stringify(startAt));
+            sessionStorage.setItem("visitCount", visitCount);
+        }
+    </script>
+</body>
+</html>
